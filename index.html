@@ -3,354 +3,501 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<meta name="color-scheme" content="light dark" />
+<meta name="color-scheme" content="light" />
 <link rel="icon" href="data:," />
 <title>Cozybase — One cozy home for all your AIs</title>
 <style>
-  :root{
-    --bg:#f7f6f2; --surface:#ffffff; --surface2:#efeee8; --ink:#1c2321; --muted:#5c6660;
-    --line:#ddd9cf; --accent:#0f6b4f; --accent-ink:#ffffff; --accent-soft:#e3efe9;
-    --warn-bg:#fdf3e0; --warn-line:#e5cf9a; --warn-ink:#6d5516;
-    --err-bg:#fdeeee; --err-line:#eec3c3; --err-ink:#8c2f2f;
-    --ok:#0f6b4f; --code-bg:#14201c; --code-ink:#e8f0ec;
-    --radius:10px;
-  }
-  @media (prefers-color-scheme: dark){
-    :root{
-      --bg:#121614; --surface:#1a1f1d; --surface2:#222825; --ink:#e9edea; --muted:#a7b0aa;
-      --line:#333a36; --accent:#3cb68b; --accent-ink:#0c1712; --accent-soft:#1d2f28;
-      --warn-bg:#2e2614; --warn-line:#5c4d22; --warn-ink:#e8cd8a;
-      --err-bg:#331d1d; --err-line:#633737; --err-ink:#f0b4b4;
-      --ok:#3cb68b; --code-bg:#0b100e; --code-ink:#dce8e1;
-    }
-  }
-  *{box-sizing:border-box}
-  html{scroll-behavior:smooth}
-  body{margin:0;background:var(--bg);color:var(--ink);
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
-  .wrap{max-width:720px;margin:0 auto;padding:28px 18px 80px}
-  h1{font-family:Georgia,"Times New Roman",serif;font-weight:600;font-size:34px;line-height:1.15;margin:0 0 10px;letter-spacing:-.01em}
-  h2{font-family:Georgia,"Times New Roman",serif;font-weight:600;font-size:22px;margin:0 0 6px}
-  h3{font-size:16px;margin:18px 0 6px}
-  p{margin:0 0 12px}
-  .lede{font-size:18px;color:var(--muted);max-width:60ch}
-  a{color:var(--accent);text-underline-offset:2px}
-  .small{font-size:13.5px;color:var(--muted)}
-  .step{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px;margin:18px 0}
-  .step-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:4px}
-  .step-num{font-family:Georgia,serif;font-size:15px;color:var(--accent);border:1.5px solid var(--accent);
-    border-radius:50%;width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;flex:none;position:relative;top:5px}
-  .tag{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent);border:1px solid var(--line)}
-  .tag.paste{background:var(--warn-bg);color:var(--warn-ink);border-color:var(--warn-line)}
-  label{display:block;font-weight:600;font-size:14px;margin:14px 0 5px}
-  input[type=text],input[type=password],select,textarea{width:100%;padding:11px 12px;border:1px solid var(--line);
-    border-radius:8px;background:var(--surface);color:var(--ink);font:inherit;font-size:15px}
-  textarea{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;line-height:1.5}
-  input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
-  .btn{display:inline-block;border:0;cursor:pointer;font:inherit;font-weight:600;font-size:16px;
-    background:var(--accent);color:var(--accent-ink);padding:13px 22px;border-radius:8px;width:100%;text-align:center;margin-top:14px}
-  .btn:hover{filter:brightness(1.07)}
-  .btn:disabled{opacity:.45;cursor:not-allowed;filter:none}
-  .btn.secondary{background:var(--surface2);color:var(--ink);border:1px solid var(--line)}
-  .btn.small-btn{width:auto;font-size:13.5px;padding:7px 14px;margin-top:0}
-  .btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
-  .hero-btn{font-size:18px;padding:16px 24px}
-  .honest{background:var(--warn-bg);border:1px solid var(--warn-line);border-radius:var(--radius);padding:16px 18px;margin:20px 0;color:var(--ink)}
-  .honest strong{color:var(--warn-ink)}
-  .safe{background:var(--accent-soft);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;margin:20px 0}
-  ul.check{list-style:none;margin:10px 0 4px;padding:0}
-  ul.check li{display:flex;gap:10px;align-items:flex-start;padding:7px 0;border-bottom:1px dashed var(--line);font-size:14.5px}
-  ul.check li:last-child{border-bottom:0}
-  .dot{flex:none;width:20px;height:20px;border-radius:50%;border:2px solid var(--line);margin-top:1px;
-    display:inline-flex;align-items:center;justify-content:center;font-size:12px;color:transparent;background:var(--surface)}
-  li.doing .dot{border-color:var(--accent);border-top-color:transparent;animation:spin 0.8s linear infinite}
-  li.done .dot{background:var(--ok);border-color:var(--ok);color:#fff}
-  li.failed .dot{background:var(--err-ink);border-color:var(--err-ink);color:#fff}
-  li .st{margin-left:auto;font-size:12.5px;color:var(--muted);white-space:nowrap;padding-left:8px}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  .err{display:none;background:var(--err-bg);border:1px solid var(--err-line);color:var(--err-ink);
-    border-radius:8px;padding:12px 14px;margin-top:12px;font-size:14px;word-break:break-word;white-space:pre-wrap}
-  .err.show{display:block}
-  .okbox{display:none;background:var(--accent-soft);border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-top:12px;font-size:14.5px}
-  .okbox.show{display:block}
-  pre{background:var(--code-bg);color:var(--code-ink);border-radius:8px;padding:14px;overflow-x:auto;
-    font-size:12.5px;line-height:1.55;margin:8px 0;white-space:pre-wrap;word-break:break-word}
-  .block-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:18px}
-  .block-head h3{margin:0}
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  @media (max-width:560px){.grid2{grid-template-columns:1fr} h1{font-size:29px}}
-  .hidden{display:none !important}
-  .divider{border:0;border-top:1px solid var(--line);margin:26px 0}
-  .skip{margin-top:10px;text-align:center}
-  details{margin-top:12px}
-  summary{cursor:pointer;font-size:14px;color:var(--accent);font-weight:600}
-  .filelist{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;color:var(--muted);line-height:1.9}
-  .pw-once{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:15px;background:var(--code-bg);color:var(--code-ink);
-    padding:12px;border-radius:8px;word-break:break-all;margin:8px 0}
-  @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto} li.doing .dot{animation:none}}
+:root{
+  --bg:#ffffff; --surface:#ffffff; --surface2:#f4f4f1; --ink:#111111; --muted:#3f3f3f;
+  --line:#cfcfc8; --accent:#0a6640; --accent-ink:#ffffff; --accent-soft:#e6f2ec;
+  --warn-bg:#fff6dd; --warn-line:#d9b84a; --warn-ink:#5c4300;
+  --err-bg:#fdecec; --err-line:#d98c8c; --err-ink:#8c1d1d;
+  --ok:#0a6640; --code-bg:#111111; --code-ink:#f2f2f2;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  font-size:20px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:640px;margin:0 auto;padding:36px 22px 48px;min-height:100dvh;display:flex;flex-direction:column}
+h1{font-size:42px;line-height:1.12;margin:0 0 16px;font-weight:800;letter-spacing:-.02em}
+h2{font-size:32px;line-height:1.2;margin:0 0 10px;font-weight:800}
+h3{font-size:22px;margin:22px 0 8px;font-weight:700}
+p{margin:0 0 14px}
+a{color:var(--accent);text-underline-offset:3px;font-weight:600}
+.screen{display:none}
+.screen.active{display:block;animation:fade .25s ease}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.lede{font-size:22px;color:var(--ink);margin-bottom:28px}
+.progress{margin-bottom:28px}
+.progress-label{font-size:18px;color:var(--muted);font-weight:600;margin-bottom:10px}
+.dots{display:flex;gap:10px}
+.dots span{width:14px;height:14px;border-radius:50%;background:#d9d9d2;border:2px solid #bdbdb2}
+.dots span.on{background:var(--accent);border-color:var(--accent)}
+.dots span.done{background:var(--accent);border-color:var(--accent);opacity:.45}
+.btn{display:flex;align-items:center;justify-content:center;width:100%;min-height:72px;
+  border:0;cursor:pointer;font:inherit;font-weight:700;font-size:23px;line-height:1.25;
+  background:var(--accent);color:var(--accent-ink);padding:18px 24px;border-radius:18px;
+  margin-top:16px;text-align:center;text-decoration:none}
+.btn:hover{filter:brightness(1.08)}
+.btn:disabled{opacity:.45;cursor:not-allowed;filter:none}
+.btn.secondary{background:#ffffff;color:var(--ink);border:3px solid var(--ink)}
+.btn.quiet{background:var(--surface2);color:var(--ink);border:2px solid var(--line)}
+.btn.small-btn{width:auto;min-height:56px;font-size:19px;padding:12px 20px;margin-top:8px;display:inline-flex}
+.text-btn{display:block;width:100%;min-height:56px;margin-top:10px;padding:12px 20px;background:none;border:0;cursor:pointer;font:inherit;font-size:20px;font-weight:700;color:var(--accent);text-decoration:underline;text-underline-offset:4px;text-align:center}
+.demo-line{font-size:19px;font-weight:700;color:var(--warn-ink);margin:14px 0 0}
+.why{font-size:17px;color:var(--muted);text-align:center;margin:12px 0 0}
+.visual{margin:34px 0 6px}
+.visual svg{width:100%;height:auto;display:block}
+.bubble{background:var(--accent-soft);border-radius:22px 22px 22px 8px;padding:20px 22px;font-size:21px;line-height:1.45;margin:6px 0 0}
+.bubble-label{font-size:16px;color:var(--muted);margin:10px 0 0}
+#pastesWrap>summary{display:none}
+.fs-row{display:flex;align-items:center;justify-content:space-between;gap:14px;background:var(--surface2);border-radius:16px;padding:14px 18px;margin-top:12px}
+.fs-row .fs-name{font-size:21px;font-weight:700}
+.fs-row .btn{margin-top:0;flex:none}
+label{display:block;font-weight:700;font-size:20px;margin:22px 0 8px}
+input[type=text],input[type=password],select,textarea{width:100%;min-height:64px;padding:14px 16px;
+  border:2px solid var(--ink);border-radius:14px;background:#fff;color:var(--ink);font:inherit;font-size:20px}
+input[type=file]{font:inherit;font-size:18px;width:100%;padding:14px 0}
+textarea{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:16px}
+input:focus,select:focus,textarea:focus,.btn:focus-visible,summary:focus-visible{outline:4px solid var(--accent);outline-offset:2px}
+details{margin-top:26px;border-top:2px solid var(--line);padding-top:18px}
+summary{cursor:pointer;font-size:19px;color:var(--accent);font-weight:700;min-height:48px}
+details p,details li{font-size:18px}
+.small{font-size:18px;color:var(--muted)}
+.honest{background:var(--warn-bg);border:2px solid var(--warn-line);border-radius:14px;padding:18px;margin:18px 0;color:var(--ink);font-size:18px}
+.safe{background:var(--accent-soft);border:2px solid var(--line);border-radius:14px;padding:18px;margin:18px 0;font-size:18px}
+.tag{display:inline-block;font-size:17px;font-weight:700;padding:6px 14px;border-radius:999px;background:var(--accent-soft);color:var(--accent);border:2px solid var(--line)}
+.tag.paste{background:var(--warn-bg);color:var(--warn-ink);border-color:var(--warn-line)}
+ul.check{list-style:none;margin:14px 0;padding:0}
+ul.check li{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:2px dashed var(--line);font-size:18px}
+ul.check li:last-child{border-bottom:0}
+.dot{flex:none;width:28px;height:28px;border-radius:50%;border:3px solid var(--line);margin-top:1px;display:inline-flex;align-items:center;justify-content:center;font-size:16px;color:transparent;background:#fff}
+li.doing .dot{border-color:var(--accent);border-top-color:transparent;animation:spin .8s linear infinite}
+li.done .dot{background:var(--ok);border-color:var(--ok);color:#fff}
+li.failed .dot{background:var(--err-ink);border-color:var(--err-ink);color:#fff}
+li .st{margin-left:auto;font-size:17px;color:var(--muted);white-space:nowrap;padding-left:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.err{display:none;background:var(--err-bg);border:2px solid var(--err-line);color:var(--err-ink);border-radius:14px;padding:16px;margin-top:14px;font-size:18px;word-break:break-word;white-space:pre-wrap}
+.err.show{display:block}
+.okbox{display:none;background:var(--accent-soft);border:2px solid var(--line);border-radius:14px;padding:16px;margin-top:14px;font-size:18px}
+.okbox.show{display:block}
+pre{background:var(--code-bg);color:var(--code-ink);border-radius:14px;padding:16px;overflow-x:auto;font-size:16px;line-height:1.55;margin:10px 0;white-space:pre-wrap;word-break:break-word}
+.block-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:22px}
+.block-head h3{margin:0}
+.hidden{display:none !important}
+.filelist{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:16px;color:var(--muted);line-height:1.9}
+.pw-once{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:19px;background:var(--code-bg);color:var(--code-ink);padding:16px;border-radius:14px;word-break:break-all;margin:10px 0}
+.spinner{width:76px;height:76px;border-radius:50%;border:9px solid var(--accent-soft);border-top-color:var(--accent);animation:spin .8s linear infinite;margin:12px 0 28px}
+.big-icon{width:118px;height:118px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:62px;font-weight:800;margin:8px 0 26px;color:#fff}
+.big-icon.ok{background:var(--ok)}
+.big-icon.bad{background:#b3261e}
+.state-msg{font-size:22px}
+.inline-err{display:none;color:var(--err-ink);font-weight:700;font-size:20px;margin-top:14px}
+.inline-err.show{display:block}
+.done-links p{font-size:21px;word-break:break-word}
+.footer-line{margin-top:auto;padding-top:40px;font-size:14px;color:var(--muted);text-align:center}
+table{font-size:18px}
+@media (max-width:560px){h1{font-size:36px}h2{font-size:30px}.btn{font-size:22px}}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}.spinner,li.doing .dot{animation:none}.screen.active{animation:none}}
+
 </style>
 </head>
 <body>
 <div class="wrap">
 
-  <header>
-    <h1>Cozybase</h1>
-    <p class="lede" style="margin-bottom:6px"><strong>One cozy home for all your AIs.</strong></p>
-    <p class="lede">Someone shared this page with you so your AI helpers can actually remember you. It sets up two things in your own name, both private: a folder for your files, and a safe store for what your helpers learn about you — instead of every app forgetting you between chats.</p>
-    <p class="lede" style="color:var(--ink)">Use this page once. After that, your AIs just work better — there's nothing here to come back to, no account, no app to download.</p>
-    <button class="btn hero-btn" id="startBtn" type="button">Set up my agent home</button>
-    <p style="margin-top:12px"><strong>Free — no payment and no account with us. Everything created is yours, under your own accounts.</strong></p>
-    <p class="small">No server of ours touches your keys. Everything below runs in your browser: you sign in on GitHub's and Supabase's own screens (a tiny helper swaps the sign-in reply for a key only GitHub or Supabase ever sees used), and anything you paste under “Advanced” is checked in your browser and never saved — it's held in memory only, and sent nowhere except the company it belongs to.</p>
-  </header>
-
-  <div class="honest" role="note">
-    <p style="margin:0"><strong>Honest labels, up front.</strong> Each step says what it really takes:</p>
-    <ul style="margin:8px 0 0;padding-left:20px">
-      <li><strong>GitHub — one click, when switched on.</strong> The “Connect GitHub” button uses GitHub's own sign-in screen. That needs a small registered app behind it; if this copy of the page doesn't have one yet, the button says so plainly (“Demo mode”) and offers a copy-a-code fallback under “Advanced” — it will never pretend to be connected when it isn't.</li>
-      <li><strong>Supabase — one click, when switched on.</strong> Same deal: a “Connect Supabase” button, an honest demo-mode label when it isn't configured, and the same code fallback under “Advanced”.</li>
-      <li><strong>What does it cost?</strong> Nothing here. This page is free, and GitHub's and Supabase's free plans cover everything it creates.</li>
-      <li><strong>Your AI tools — one paste each.</strong> There is no shared one-click sign-in across Muse, Claude, ChatGPT, Grok and others. This page generates a ready-to-paste block for each tool instead.</li>
-      <li><strong>Credentials never go in the repo.</strong> The repo only ever receives a project reference and a public URL. Keys live in a local <code>.env</code> file you keep, or in GitHub Secrets — stated again at the wiring step.</li>
-    </ul>
+  <div class="progress hidden" id="progressWrap" aria-hidden="true">
+    <div class="progress-label" id="progressLabel">Step 1 of 3</div>
+    <div class="dots"><span id="dot1"></span><span id="dot2"></span><span id="dot3"></span></div>
   </div>
 
-  <!-- STEP 0 -->
-  <section class="step" id="step0">
-    <div class="step-head"><span class="step-num">0</span><h2>Who is this home for?</h2><span class="tag">30 seconds</span></div>
-    <p>One identity runs through everything: it prefills your USER.md, suggests your repo name, and is the name and email to use when you sign up for GitHub and Supabase, so the accounts line up as yours.</p>
+  <!-- WELCOME -->
+  <section class="screen active" id="screen-welcome">
+    <h1>Every AI you use. One memory.</h1>
+    <div class="visual" aria-hidden="true">
+      <svg viewBox="0 0 560 220" role="img" aria-label="Claude, ChatGPT and Grok flowing into one folder, and back out smarter">
+        <defs>
+          <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9a9a90"/></marker>
+        </defs>
+        <g font-family="inherit" font-size="17" font-weight="600" fill="#111111">
+          <rect x="6" y="18" width="128" height="44" rx="22" fill="#f4f4f1"/><text x="70" y="46" text-anchor="middle">Claude</text>
+          <rect x="6" y="88" width="128" height="44" rx="22" fill="#f4f4f1"/><text x="70" y="116" text-anchor="middle">ChatGPT</text>
+          <rect x="6" y="158" width="128" height="44" rx="22" fill="#f4f4f1"/><text x="70" y="186" text-anchor="middle">Grok</text>
+          <rect x="426" y="18" width="128" height="44" rx="22" fill="#e6f2ec"/><text x="490" y="46" text-anchor="middle">Claude ✦</text>
+          <rect x="426" y="88" width="128" height="44" rx="22" fill="#e6f2ec"/><text x="490" y="116" text-anchor="middle">ChatGPT ✦</text>
+          <rect x="426" y="158" width="128" height="44" rx="22" fill="#e6f2ec"/><text x="490" y="186" text-anchor="middle">Grok ✦</text>
+        </g>
+        <path d="M140,40 C180,40 190,86 224,98" fill="none" stroke="#9a9a90" stroke-width="2.5" marker-end="url(#arr)"/>
+        <path d="M140,110 L224,110" fill="none" stroke="#9a9a90" stroke-width="2.5" marker-end="url(#arr)"/>
+        <path d="M140,180 C180,180 190,134 224,122" fill="none" stroke="#9a9a90" stroke-width="2.5" marker-end="url(#arr)"/>
+        <path d="M336,98 C370,86 380,40 420,40" fill="none" stroke="#0a6640" stroke-width="2.5" marker-end="url(#arr)"/>
+        <path d="M336,110 L420,110" fill="none" stroke="#0a6640" stroke-width="2.5" marker-end="url(#arr)"/>
+        <path d="M336,122 C370,134 380,180 420,180" fill="none" stroke="#0a6640" stroke-width="2.5" marker-end="url(#arr)"/>
+        <g>
+          <path d="M238,84 h30 l10,14 h58 a10,10 0 0 1 10,10 v56 a10,10 0 0 1 -10,10 h-98 a10,10 0 0 1 -10,-10 v-70 a10,10 0 0 1 10,-10 z" fill="#e6f2ec" stroke="#0a6640" stroke-width="2.5"/>
+          <text x="287" y="140" text-anchor="middle" font-size="21" font-weight="700" fill="#0a6640">One home</text>
+        </g>
+      </svg>
+    </div>
+    <p class="lede">One private home, so every AI helper knows you.</p>
+    <button class="btn" id="startBtn" type="button">Set up my agent home</button>
+    <p class="why">Free. Yours. Takes two minutes.</p>
+    <details>
+      <summary>Details</summary>
+      <p>Someone shared this page with you so your AI helpers can actually remember you. It sets up two things in your own name, both private: a folder for your files, and a safe store for what your helpers learn about you — instead of every app forgetting you between chats.</p>
+      <p><strong>Use this page once.</strong> After that, your AIs just work better — there is nothing here to come back to, no account with us, no app to download.</p>
+      <p><strong>Free — no payment and no account with us.</strong> Everything created is yours, under your own accounts. GitHub's and Supabase's free plans cover everything it creates, so it costs us nothing per person either.</p>
+      <p><strong>Honest labels.</strong> Each step says what it really takes:</p>
+      <ul>
+        <li><strong>GitHub — one click, when switched on.</strong> The “Connect GitHub” button uses GitHub's own sign-in screen. That needs a small registered app behind it; if this copy of the page doesn't have one yet, the button says so plainly (“Demo mode”) and offers a copy-a-code fallback under Details on that step — it will never pretend to be connected when it isn't.</li>
+        <li><strong>Supabase — one click, when switched on.</strong> Same deal: a “Connect Supabase” button, an honest demo-mode label when it isn't configured, and the same code fallback under Details.</li>
+        <li><strong>Your AI tools — one paste each.</strong> There is no shared one-click sign-in across Muse, Claude, ChatGPT, Grok and others. This page generates a ready-to-paste block for each tool instead.</li>
+        <li><strong>Credentials never go in the repo.</strong> The repo only ever receives a project reference and a public URL. Keys live in a local <code>.env</code> file you keep, or in GitHub Secrets.</li>
+      </ul>
+      <p>No server of ours touches your keys. Everything runs in your browser: you sign in on GitHub's and Supabase's own screens (a tiny helper swaps the sign-in reply for a key only GitHub or Supabase ever sees used), and anything you paste under a code fallback is checked in your browser and never saved — it is held in memory only, and sent nowhere except the company it belongs to.</p>
+      <p>A checklist item only counts as done after this page has read the result back from GitHub or Supabase itself — “created” means the provider confirmed it on a fresh request, not that a request was sent. If a provider refuses something, its own error message is shown, unedited, in the Details for that step.</p>
+      <button class="btn quiet" id="welcomeExtrasBtn" type="button">Just want the template files?</button>
+    </details>
+  </section>
+
+  <!-- STEP 1 OF 3 : NAME -->
+  <section class="screen" id="step0">
+    <h1>What's your name?</h1>
+    <p class="lede">This fills your home with your details.</p>
     <div id="googleWrap">
       <button class="btn secondary" id="googleBtn" type="button">Continue with Google</button>
-      <p class="small" id="googleNote" style="margin-top:8px">Continue with Google is not switched on for this copy of the page — it needs a Google client ID configured by whoever published it, and none is set. Use the name and email fields below instead: they do exactly the same prefill, and nothing about the rest of setup changes.</p>
       <div id="googleBtnReal" style="margin-top:10px"></div>
     </div>
     <label for="fName">Your name</label>
     <input type="text" id="fName" placeholder="e.g. Alex Rivera" autocomplete="name" />
     <label for="fEmail">Your email</label>
     <input type="text" id="fEmail" placeholder="you@example.com" autocomplete="email" spellcheck="false" />
-    <div class="okbox" id="identitySummary"></div>
-    <label for="fRepo">Repository name</label>
-    <input type="text" id="fRepo" value="agent-home" autocomplete="off" spellcheck="false" />
-    <p class="small">Suggested from your name; change it freely. Lowercase letters, numbers and hyphens. It will be created <strong>private</strong> — nothing public, ever.</p>
-  </section>
-
-  <!-- STEP 1 : GITHUB -->
-  <section class="step" id="step1">
-    <div class="step-head"><span class="step-num">1</span><h2>Your private folder on GitHub</h2><span class="tag" id="ghPill">Checking…</span></div>
-    <p>A “repo” is a private folder online that keeps every version of your files — only you can see it. GitHub is where that folder will live.</p>
-    <div class="grid2" role="group" aria-label="Do you have a GitHub account?">
-      <button class="btn secondary" id="ghHaveBtn" type="button">I have GitHub</button>
-      <button class="btn secondary" id="ghNewBtn" type="button">I don't have GitHub</button>
-    </div>
-    <div id="ghNewPanel" class="hidden">
-      <div class="honest" style="margin:14px 0">
-        <p style="margin:0 0 10px"><strong>We can't create a GitHub account for you via API — nobody can.</strong> GitHub's own signup is the one-click path: it offers “Continue with Google”, so sign up there with the same Google identity from step 0 and your name and email carry straight over. Then come back to this tab and choose “I have GitHub”.</p>
-        <a class="btn" href="https://github.com/signup" target="_blank" rel="noopener" style="text-decoration:none">Open GitHub signup in a new tab</a>
-        <p class="small" style="margin-top:10px">This page will still be here, with everything you typed kept in this tab. We will never claim your account was created by us — GitHub created it, with you.</p>
-      </div>
-    </div>
-    <div id="ghHavePanel">
-    <button class="btn" id="ghConnectBtn" type="button">Connect GitHub</button>
-    <p class="small" id="ghConnectNote" style="margin-top:8px"></p>
-    <div class="okbox" id="ghConnected"></div>
-    <p style="margin-top:14px">Once you're connected, one more click creates your private folder, fills it with the full starter set, then reads it back to prove it is really there and really private.</p>
-    <button class="btn" id="ghBtn" type="button">Create my private folder</button>
-    <ul class="check" id="ghCheck">
-      <li data-k="gh-verify"><span class="dot">✓</span><span>Token verified against GitHub (reads back your username)</span><span class="st"></span></li>
-      <li data-k="gh-create"><span class="dot">✓</span><span>Private repo created</span><span class="st"></span></li>
-      <li data-k="gh-upload"><span class="dot">✓</span><span>Template files uploaded</span><span class="st"></span></li>
-      <li data-k="gh-readback"><span class="dot">✓</span><span>Repo read back — confirmed private, files present</span><span class="st"></span></li>
-    </ul>
-    <div class="err" id="ghErr"></div>
-    <div class="okbox" id="ghOk"></div>
-    <details id="ghAdvanced">
-      <summary>Advanced / having trouble? Connect with a code instead</summary>
-      <p class="small" style="margin-top:8px">Only use this if the button above isn't working. You'll make a one-time code on GitHub and paste it here. Follow the steps exactly:</p>
-      <ol class="small" style="margin:8px 0;padding-left:20px;line-height:1.7">
-        <li><a href="https://github.com/settings/tokens/new?scopes=repo&amp;description=agent-home%20setup" target="_blank" rel="noopener">Click here — it opens GitHub in a new tab</a>, already on the right screen, with the right boxes ticked.</li>
-        <li>The name box should say “agent-home setup”. If it's empty, type that in.</li>
-        <li>Scroll to the bottom and click the green <strong>Generate token</strong> button.</li>
-        <li>GitHub shows a long code starting with <code>ghp_</code>. Click the copy icon next to it.</li>
-        <li>Come back to this tab and paste the code in the box below. This page checks it straight away and tells you if it works.</li>
-      </ol>
-      <label for="ghToken">Your code from GitHub</label>
-      <input type="password" id="ghToken" placeholder="Paste the long code here…" autocomplete="off" spellcheck="false" />
-      <div class="okbox" id="ghTokenStatus"></div>
-      <div class="err" id="ghTokenErr"></div>
-      <p class="small">The code is only ever sent to GitHub itself, from your browser, and is never saved. You can delete it on GitHub the moment setup finishes — your folder stays yours.</p>
+    <p class="inline-err" id="nameErr">Please type your name first.</p>
+    <button class="btn" id="nameContinueBtn" type="button">Continue</button>
+    <p class="why">So they know who you are.</p>
+    <details>
+      <summary>Details</summary>
+      <p class="small" id="googleNote">Continue with Google is not switched on for this copy of the page — it needs a Google client ID configured by whoever published it, and none is set. Use the name and email fields below instead: they do exactly the same job, and nothing about the rest of setup changes.</p>
+      <p>One identity runs through everything: it prefills your USER.md, suggests your repo name, and is the name and email to use when you sign up for GitHub and Supabase, so the accounts line up as yours.</p>
+      <div class="okbox" id="identitySummary"></div>
+      <label for="fRepo">Repository name</label>
+      <input type="text" id="fRepo" value="agent-home" autocomplete="off" spellcheck="false" />
+      <p class="small">Suggested from your name; change it freely. Lowercase letters, numbers and hyphens. It will be created <strong>private</strong> — nothing public, ever.</p>
     </details>
-    </div>
   </section>
 
-  <!-- STEP 2 : SUPABASE -->
-  <section class="step" id="step2">
-    <div class="step-head"><span class="step-num">2</span><h2>Your memory store on Supabase</h2><span class="tag" id="sbPill">Checking…</span></div>
-    <p>A “database” is where your agent's memory is stored safely — organised, searchable, and locked so only you can open it. Supabase is the company that will hold yours, in your own account, on their free plan.</p>
-    <button class="btn" id="sbConnectBtn" type="button">Connect Supabase</button>
-    <p class="small" id="sbConnectNote" style="margin-top:8px"></p>
-    <div class="okbox" id="sbConnected"></div>
-    <p style="margin-top:12px">Once you're connected, one click creates your memory store, sets it up with only-you-can-see-it locking from the first minute, then checks it to prove everything is really there.</p>
-    <p class="small">The project is created <strong>under your Supabase account, hooked to your identity</strong> — Supabase signup itself works with your GitHub account or email, so use the same identity from step 0 and everything lines up. The link between the two halves is step 4: <code>agent.config.json</code> in your repo carries the project's reference and public URL. That's the whole connection — no shared account, nothing of yours on anyone else's infrastructure.</p>
-    <p class="small">No Supabase account yet? <a href="https://supabase.com/dashboard/sign-up" target="_blank" rel="noopener">Create one free</a> (it offers GitHub sign-in — use the same account as step 1 so everything lines up).</p>
-    <div class="grid2">
-      <div>
-        <label for="sbOrg">Your Supabase group (“organisation”)</label>
-        <select id="sbOrg"><option value="">Connect above, then load your groups →</option></select>
+  <!-- STEP 2 OF 3, PART A : GITHUB CHOICE (this screen's only job is the choice) -->
+  <section class="screen" id="step1choice">
+    <h1>Do you have GitHub?</h1>
+    <p class="lede">If not, we'll show you how.</p>
+    <button class="btn" id="ghHaveBtn" type="button">I have GitHub</button>
+    <button class="btn secondary" id="ghNewBtn" type="button">I don't have GitHub</button>
+    <p class="why">Nothing is public, ever.</p>
+  </section>
+
+  <!-- STEP 2 OF 3, PART B : GITHUB SIGNUP -->
+  <section class="screen" id="step1signup">
+    <h1>Create a GitHub account</h1>
+    <p class="lede">It's free and takes two minutes.</p>
+    <a class="btn" href="https://github.com/signup" target="_blank" rel="noopener">Open GitHub signup</a>
+    <p class="why">Free — straight from GitHub.</p>
+    <button class="text-btn" id="ghSignupHaveBtn" type="button">I have GitHub now</button>
+    <details>
+      <summary>Details</summary>
+      <p><strong>We can't create a GitHub account for you — nobody can.</strong> GitHub's own signup is the path: it offers “Continue with Google”, so sign up there with the same name and email from the last screen and everything lines up. Then come back to this tab and tap “I have GitHub now”.</p>
+      <p>This page will still be here, with everything you typed kept in this tab. We will never claim your account was created by us — GitHub created it, with you.</p>
+    </details>
+  </section>
+
+  <!-- STEP 2 OF 3 : GITHUB -->
+  <section class="screen" id="step1">
+    <h1>Your private folder</h1>
+    <p class="lede">Only you can ever see what's inside.</p>
+    <button class="btn" id="ghPrimaryBtn" type="button">Connect and create it</button>
+    <p class="why">So your AIs share one memory.</p>
+    <p class="demo-line hidden" id="ghDemoLine">Demo mode — use a code instead (in Details).</p>
+    <details id="ghDetails">
+      <summary>Details</summary>
+      <p>A “repo” is a private folder online that keeps every version of your files — only you can see it. GitHub is where that folder will live. <span class="tag" id="ghPill">Checking…</span></p>
+      <div id="ghHavePanel">
+        <button class="btn" id="ghConnectBtn" type="button">Connect GitHub</button>
+        <p class="small" id="ghConnectNote" style="margin-top:8px"></p>
+        <div class="okbox" id="ghConnected"></div>
+        <p style="margin-top:14px">Once you're connected, this button creates your private folder, fills it with the full starter set, then reads it back to prove it is really there and really private.</p>
+        <button class="btn" id="ghBtn" type="button">Create my private folder</button>
+        <ul class="check" id="ghCheck">
+          <li data-k="gh-verify"><span class="dot">✓</span><span>Token verified against GitHub (reads back your username)</span><span class="st"></span></li>
+          <li data-k="gh-create"><span class="dot">✓</span><span>Private repo created</span><span class="st"></span></li>
+          <li data-k="gh-upload"><span class="dot">✓</span><span>Template files uploaded</span><span class="st"></span></li>
+          <li data-k="gh-readback"><span class="dot">✓</span><span>Repo read back — confirmed private, files present</span><span class="st"></span></li>
+        </ul>
+        <div class="err" id="ghErr"></div>
+        <div class="okbox" id="ghOk"></div>
+        <details id="ghAdvanced">
+          <summary>Having trouble? Connect with a code instead</summary>
+          <p class="small" style="margin-top:8px">Only use this if the button above isn't working. You'll make a one-time code on GitHub and paste it here. Follow the steps exactly:</p>
+          <ol class="small" style="margin:8px 0;padding-left:24px;line-height:1.7">
+            <li><a href="https://github.com/settings/tokens/new?scopes=repo&amp;description=agent-home%20setup" target="_blank" rel="noopener">Tap here — it opens GitHub in a new tab</a>, already on the right screen, with the right boxes ticked.</li>
+            <li>The name box should say “agent-home setup”. If it's empty, type that in.</li>
+            <li>Scroll to the bottom and tap the green <strong>Generate token</strong> button.</li>
+            <li>GitHub shows a long code starting with <code>ghp_</code>. Tap the copy icon next to it.</li>
+            <li>Come back to this tab and paste the code in the box below. This page checks it straight away and tells you if it works.</li>
+          </ol>
+          <label for="ghToken">Your code from GitHub</label>
+          <input type="password" id="ghToken" placeholder="Paste the long code here…" autocomplete="off" spellcheck="false" />
+          <div class="okbox" id="ghTokenStatus"></div>
+          <div class="err" id="ghTokenErr"></div>
+          <p class="small">The code is only ever sent to GitHub itself, from your browser, and is never saved. You can delete it on GitHub the moment setup finishes — your folder stays yours.</p>
+        </details>
       </div>
-      <div>
-        <label for="sbRegion">Region (closest to you is best)</label>
-        <select id="sbRegion">
-          <option value="ap-southeast-1" selected>Singapore (Southeast Asia)</option>
-          <option value="ap-northeast-1">Tokyo (Northeast Asia)</option>
-          <option value="ap-northeast-2">Seoul (Northeast Asia)</option>
-          <option value="ap-south-1">Mumbai (South Asia)</option>
-          <option value="ap-southeast-2">Sydney (Oceania)</option>
-          <option value="eu-west-1">Ireland (Europe)</option>
-          <option value="eu-west-2">London (Europe)</option>
-          <option value="eu-central-1">Frankfurt (Europe)</option>
-          <option value="us-east-1">N. Virginia (US East)</option>
-          <option value="us-west-1">N. California (US West)</option>
-          <option value="ca-central-1">Canada (Central)</option>
-          <option value="sa-east-1">São Paulo (South America)</option>
-        </select>
-      </div>
+    </details>
+  </section>
+
+  <!-- STEP 3 OF 3 : SUPABASE -->
+  <section class="screen" id="step2">
+    <h1>Your private memory</h1>
+    <p class="lede">Locked away, and only you hold the key.</p>
+    <button class="btn" id="sbPrimaryBtn" type="button">Create my private memory</button>
+    <p class="why">So they remember between chats.</p>
+    <p class="demo-line hidden" id="sbDemoLine">Demo mode — use a code instead (in Details).</p>
+    <button class="text-btn" id="sbSkip" type="button">Skip for now</button>
+    <details id="sbDetails">
+      <summary>Details</summary>
+      <p>A “database” is where your agent's memory is stored safely — organised, searchable, and locked so only you can open it. Supabase is the company that will hold yours, in your own account, on their free plan. <span class="tag" id="sbPill">Checking…</span></p>
+      <button class="btn" id="sbConnectBtn" type="button">Connect Supabase</button>
+      <p class="small" id="sbConnectNote" style="margin-top:8px"></p>
+      <div class="okbox" id="sbConnected"></div>
+      <p style="margin-top:12px">Once you're connected, this creates your memory store, sets it up with only-you-can-see-it locking from the first minute, then checks it to prove everything is really there.</p>
+      <p class="small">The project is created <strong>under your Supabase account, hooked to your identity</strong> — Supabase signup itself works with your GitHub account or email, so use the same identity from step 1 and everything lines up. The link between the two halves is the wiring at the end: <code>agent.config.json</code> in your repo carries the project's reference and public URL. That's the whole connection — no shared account, nothing of yours on anyone else's infrastructure.</p>
+      <p class="small">No Supabase account yet? <a href="https://supabase.com/dashboard/sign-up" target="_blank" rel="noopener">Create one free</a> (it offers GitHub sign-in — use the same account as step 1 so everything lines up).</p>
+      <label for="sbOrg">Your Supabase group (“organisation”)</label>
+      <select id="sbOrg"><option value="">Connect above, then load your groups →</option></select>
+      <label for="sbRegion">Region (closest to you is best)</label>
+      <select id="sbRegion">
+        <option value="ap-southeast-1" selected>Singapore (Southeast Asia)</option>
+        <option value="ap-northeast-1">Tokyo (Northeast Asia)</option>
+        <option value="ap-northeast-2">Seoul (Northeast Asia)</option>
+        <option value="ap-south-1">Mumbai (South Asia)</option>
+        <option value="ap-southeast-2">Sydney (Oceania)</option>
+        <option value="eu-west-1">Ireland (Europe)</option>
+        <option value="eu-west-2">London (Europe)</option>
+        <option value="eu-central-1">Frankfurt (Europe)</option>
+        <option value="us-east-1">N. Virginia (US East)</option>
+        <option value="us-west-1">N. California (US West)</option>
+        <option value="ca-central-1">Canada (Central)</option>
+        <option value="sa-east-1">São Paulo (South America)</option>
+      </select>
+      <button class="btn quiet" id="sbOrgBtn" type="button">Load my groups</button>
+      <button class="btn" id="sbBtn" type="button">Create my memory store</button>
+      <ul class="check" id="sbCheck">
+        <li data-k="sb-verify"><span class="dot">✓</span><span>Token verified (organisations listed)</span><span class="st"></span></li>
+        <li data-k="sb-create"><span class="dot">✓</span><span>Free-tier project created</span><span class="st"></span></li>
+        <li data-k="sb-active"><span class="dot">✓</span><span>Project is live (status ACTIVE_HEALTHY)</span><span class="st"></span></li>
+        <li data-k="sb-schema"><span class="dot">✓</span><span>Starter schema applied</span><span class="st"></span></li>
+        <li data-k="sb-readback"><span class="dot">✓</span><span>Tables verified by querying the database</span><span class="st"></span></li>
+      </ul>
+      <div class="err" id="sbErr"></div>
+      <div class="okbox" id="sbOk"></div>
+      <details id="sbAdvanced">
+        <summary>Having trouble? Connect with a code instead</summary>
+        <p class="small" style="margin-top:8px">Only use this if the button above isn't working. Follow the steps exactly:</p>
+        <ol class="small" style="margin:8px 0;padding-left:24px;line-height:1.7">
+          <li><a href="https://supabase.com/dashboard/account/tokens" target="_blank" rel="noopener">Tap here — it opens Supabase in a new tab</a>, on the page where access codes live.</li>
+          <li>Tap <strong>Generate new token</strong>, name it “agent-home setup”, and tap generate.</li>
+          <li>Supabase shows a long code starting with <code>sbp_</code>. Copy it.</li>
+          <li>Come back to this tab and paste it in the box below. This page checks it straight away, then the “Create my memory store” button above will work.</li>
+        </ol>
+        <label for="sbToken">Your code from Supabase</label>
+        <input type="password" id="sbToken" placeholder="Paste the long code here…" autocomplete="off" spellcheck="false" />
+        <div class="okbox" id="sbTokenStatus"></div>
+        <div class="err" id="sbTokenErr"></div>
+        <p class="small">The code is only ever sent to Supabase itself, from your browser, and is never saved. You can delete it on Supabase the moment setup finishes.</p>
+      </details>
+    </details>
+  </section>
+
+  <!-- WORKING STATE -->
+  <section class="screen" id="screen-working" aria-live="polite">
+    <div class="spinner" role="status" aria-label="Working"></div>
+    <h1 id="workingTitle">Working…</h1>
+    <p class="state-msg" id="workingMsg">Please keep this page open.</p>
+  </section>
+
+  <!-- SUCCESS STATE -->
+  <section class="screen" id="screen-success">
+    <div class="big-icon ok" aria-hidden="true">✓</div>
+    <h1 id="successTitle">Done</h1>
+    <p class="state-msg" id="successLine">Checked and confirmed.</p>
+    <button class="btn" id="successContinueBtn" type="button">Continue</button>
+  </section>
+
+  <!-- FAILED STATE -->
+  <section class="screen" id="screen-failed">
+    <div class="big-icon bad" aria-hidden="true">✗</div>
+    <h1>That didn't work</h1>
+    <p class="state-msg" id="failedLine">Something went wrong. Nothing is lost.</p>
+    <button class="btn" id="failedRetryBtn" type="button">Try again</button>
+    <button class="text-btn" id="failedBackBtn" type="button">Go back</button>
+    <details id="failedDetails">
+      <summary>Details</summary>
+      <pre id="failedTech"></pre>
+    </details>
+  </section>
+
+  <!-- GET THE FULL SET (optional, after wiring, before done) -->
+  <section class="screen" id="stepFullSet">
+    <h1>Get the full set. Free.</h1>
+    <p class="lede">Most people use just one AI. The others are free too.</p>
+    <div id="fullSetRows"></div>
+    <button class="btn" id="fullSetContinueBtn" type="button" style="margin-top:26px">Continue</button>
+    <p class="why">You can add more AIs anytime.</p>
+    <details>
+      <summary>Details</summary>
+      <p>Links may include the sharer's referral code.</p>
+      <p>After joining, redeem code 18GRDY in Settings within 48 hours — you both get 1 billion Muse tokens.</p>
+    </details>
+  </section>
+
+  <!-- DONE -->
+  <section class="screen" id="step4">
+    <h1>You're done 🎉</h1>
+    <p class="lede">Your AIs can now remember you properly.</p>
+    <div id="proofBubble" class="hidden">
+      <div class="bubble" id="proofBubbleText"></div>
+      <p class="bubble-label">Read back from your home just now.</p>
     </div>
-    <button class="btn secondary" id="sbOrgBtn" type="button">Load my groups</button>
-    <button class="btn" id="sbBtn" type="button">Create my memory store</button>
-    <ul class="check" id="sbCheck">
-      <li data-k="sb-verify"><span class="dot">✓</span><span>Token verified (organisations listed)</span><span class="st"></span></li>
-      <li data-k="sb-create"><span class="dot">✓</span><span>Free-tier project created</span><span class="st"></span></li>
-      <li data-k="sb-active"><span class="dot">✓</span><span>Project is live (status ACTIVE_HEALTHY)</span><span class="st"></span></li>
-      <li data-k="sb-schema"><span class="dot">✓</span><span>Starter schema applied</span><span class="st"></span></li>
-      <li data-k="sb-readback"><span class="dot">✓</span><span>Tables verified by querying the database</span><span class="st"></span></li>
-    </ul>
-    <div class="err" id="sbErr"></div>
-    <div class="okbox" id="sbOk"></div>
-    <div id="sbPwBox" class="hidden">
-      <h3>Save this database password now</h3>
+    <div class="done-links" id="doneLinks"></div>
+    <details id="sbPwBox" class="hidden">
+      <summary>Save this database password now</summary>
       <p class="small">Generated in your browser for the new project. Shown once here, never committed anywhere. You need it only for direct database connections — most tools use the API keys in your <code>.env</code> instead.</p>
       <div class="pw-once" id="sbPw"></div>
       <button class="btn small-btn secondary" id="sbPwCopy" type="button">Copy password</button>
-    </div>
-    <p class="skip"><button class="btn ghost small-btn" id="sbSkip" type="button">I'll add a database later</button></p>
-    <details id="sbAdvanced">
-      <summary>Advanced / having trouble? Connect with a code instead</summary>
-      <p class="small" style="margin-top:8px">Only use this if the button above isn't working. Follow the steps exactly:</p>
-      <ol class="small" style="margin:8px 0;padding-left:20px;line-height:1.7">
-        <li><a href="https://supabase.com/dashboard/account/tokens" target="_blank" rel="noopener">Click here — it opens Supabase in a new tab</a>, on the page where access codes live.</li>
-        <li>Click <strong>Generate new token</strong>, name it “agent-home setup”, and click generate.</li>
-        <li>Supabase shows a long code starting with <code>sbp_</code>. Copy it.</li>
-        <li>Come back to this tab and paste it in the box below. This page checks it straight away, then the “Create my memory store” button above will work.</li>
-      </ol>
-      <label for="sbToken">Your code from Supabase</label>
-      <input type="password" id="sbToken" placeholder="Paste the long code here…" autocomplete="off" spellcheck="false" />
-      <div class="okbox" id="sbTokenStatus"></div>
-      <div class="err" id="sbTokenErr"></div>
-      <p class="small">The code is only ever sent to Supabase itself, from your browser, and is never saved. You can delete it on Supabase the moment setup finishes.</p>
     </details>
-  </section>
-
-  <!-- STEP 3 : IMPORT & RECONCILE -->
-  <section class="step" id="stepImport">
-    <div class="step-head"><span class="step-num">3</span><h2>Bring what your tools already know</h2><span class="tag">Your files, your call</span></div>
-    <p>Already have memory files — a Claude or Muse export, ChatGPT or Grok notes, plain local files? Add them here. This page reads them <em>in your browser only</em>, pulls out candidate memories, drops exact duplicates, and shows you every conflict to settle yourself. <strong>Nothing is silently overwritten, ever</strong> — where two files disagree, you pick.</p>
-    <label for="importFiles">Memory files (.md, .txt, .json — pick as many as you have)</label>
-    <input type="file" id="importFiles" accept=".md,.txt,.json,text/markdown,text/plain,application/json" multiple />
-    <div class="okbox" id="importSummary"></div>
-    <div id="conflictList"></div>
-    <div class="err" id="importErr"></div>
-    <div id="importActions" class="hidden">
-      <button class="btn" id="importRepoBtn" type="button">Write the reconciled import to my repo</button>
-      <p class="small" style="margin-top:8px">Commits two things: your reconciled memories appended to <code>MEMORY.md</code>, and an <code>IMPORT-REPORT.md</code> listing what came from where, which duplicates were dropped, and how each conflict was resolved. Needs the repo from step 1 (if you import before creating the repo, the import rides along automatically when the repo is created).</p>
-      <button class="btn secondary" id="importRowsBtn" type="button">Show the database rows this prepares</button>
-      <div id="importRowsBox" class="hidden">
-        <div class="block-head"><h3>Rows prepared for the <code>memories</code> table</h3>
-        <button class="btn small-btn secondary" id="importRowsCopy" type="button">Copy JSON</button></div>
-        <pre id="importRowsPre"></pre>
-        <p class="small">Load them with <code>tools/import_md.py</code> from your repo, or paste into your own import. <code>owner_id</code> is left as <code>YOUR-AUTH-USER-ID</code> on purpose: it must be your Supabase auth user id, and this page will not invent one.</p>
+    <button class="btn" id="showPastesBtn" type="button">Show my copy-paste messages</button>
+    <p class="why">Paste once into each app.</p>
+    <details id="pastesWrap">
+      <summary>Copy-paste messages</summary>
+      <div class="safe">
+        <p style="margin:0"><strong>The one safety rule:</strong> everything created here is private and yours — the repo under your GitHub account, the database under your Supabase account. Nothing on this page keeps a copy of your tokens or keys. If you ever want to cut access, revoke the token from the provider's own settings (GitHub → Settings → Developer settings; Supabase → Account → Access Tokens) and delete the keys from your local <code>.env</code>. Now revoke the two setup tokens you pasted — setup is done, they have served their purpose.</p>
       </div>
-    </div>
-  </section>
-
-  <!-- STEP 4 : WIRE -->
-  <section class="step" id="step3">
-    <div class="step-head"><span class="step-num">4</span><h2>Wire the two together</h2><span class="tag">After connecting</span></div>
-    <p>This commits three safe files to your repo: <code>agent.config.json</code> (project reference + public URL only — <strong>no keys, ever</strong>), a personalised <code>CONNECT.md</code>, and <code>.env.example</code>. Your real keys appear only in the box below, for a local <code>.env</code> file that <code>.gitignore</code> keeps out of the repo.</p>
-    <button class="btn" id="wireBtn" type="button" disabled>Wire it together</button>
-    <ul class="check" id="wireCheck">
-      <li data-k="wire-config"><span class="dot">✓</span><span><code>agent.config.json</code> committed (ref + URL only)</span><span class="st"></span></li>
-      <li data-k="wire-connect"><span class="dot">✓</span><span><code>CONNECT.md</code> committed</span><span class="st"></span></li>
-      <li data-k="wire-readback"><span class="dot">✓</span><span>Wiring read back from the repo and verified</span><span class="st"></span></li>
-    </ul>
-    <div class="err" id="wireErr"></div>
-    <div class="okbox" id="wireOk"></div>
-    <div id="envBox" class="hidden">
-      <div class="block-head"><h3>Your local <code>.env</code> — save this, never commit it</h3>
-      <button class="btn small-btn secondary" data-copy="envPre" type="button">Copy</button></div>
-      <pre id="envPre"></pre>
-    </div>
+      <div class="safe">
+        <label style="display:flex;gap:12px;align-items:flex-start;font-weight:400;margin:0;cursor:pointer">
+          <input type="checkbox" id="regTick" checked style="width:28px;height:28px;margin-top:4px;flex:none" />
+          <span><strong>Tell the person who shared this with me that I'm set up</strong> — this sends only my name and my repo link, nothing else.</span>
+        </label>
+        <p class="small" id="regNote" style="margin:8px 0 0"></p>
+      </div>
+      <h3>Confirm each app is wired: paste it this message</h3>
+      <p><strong>How to read the reply:</strong> a correct verification phrase plus correct facts are strong evidence the app is wired — not proof. A wrong or missing verification phrase means <strong>not wired</strong>, even if the other answers sound plausible.</p>
+      <p class="small">Send the matching message to each AI app you use. It tells the app to read your repo and reply, first, with the verification phrase written in MEMORY.md when your home was set up — quoted verbatim — then your name from USER.md, one fact from MEMORY.md quoted word for word, and the canonical-store line. If it names a blank field instead, you're connected — you just haven't filled that part in yet; that's “wired, just not filled in yet”, not a failure. If it instead says “I can't read your agent home yet”, that app isn't wired; paste it the full setup block from <code>CONNECT.md</code> in your repo first.</p>
+      <div id="confirmBlocks"></div>
+      <button class="text-btn" id="pastesFullSetBtn" type="button">Get more AIs (free)</button>
+      <h3>Full setup blocks</h3>
+      <p class="small">The longer first-time blocks (also saved as <code>CONNECT.md</code> in your repo). There is no shared one-click sign-in across these tools — a generated paste block is the honest version.</p>
+      <div id="doneBlocks"></div>
+      <div id="envBox" class="hidden">
+        <div class="block-head"><h3>Your local <code>.env</code> — save this, never commit it</h3>
+        <button class="btn small-btn secondary" data-copy="envPre" type="button">Copy</button></div>
+        <pre id="envPre"></pre>
+        <p class="small">This is the only key file an AI app may ever draw from, and the only key in it is <code>SUPABASE_ANON_KEY</code>.</p>
+      </div>
+      <div id="envServiceBox" class="hidden">
+        <div class="block-head"><h3><code>.env.service-role</code> (importer only — never give this to any AI app)</h3>
+        <button class="btn small-btn secondary" data-copy="envServicePre" type="button">Copy</button></div>
+        <pre id="envServicePre"></pre>
+        <p class="small">Save this as a separate local file next to your <code>.env</code>. Only the importer (<code>tools/import_md.py</code>) on your own machine uses it — it has full access to your database.</p>
+      </div>
+    </details>
+    <button class="text-btn" id="doneExtrasBtn" type="button">Bring old memories (optional)</button>
     <details>
-      <summary>Optional: GitHub Secrets (manual — this page does not do this for you)</summary>
-      <p class="small" style="margin-top:8px">If you later run GitHub Actions against your database, the keys belong in repo secrets. Adding them properly needs GitHub's public-key encryption flow, which this page does not perform — so here is the exact manual click-path instead of a fake button: open your repo → <strong>Settings → Secrets and variables → Actions → New repository secret</strong>, and add <code>SUPABASE_URL</code> and <code>SUPABASE_ANON_KEY</code> from your local <code>.env</code>, one at a time. Add <code>SUPABASE_SERVICE_ROLE_KEY</code> only if an Action truly needs it — it has full access to your database. Takes about two minutes; most people never need it.</p>
+      <summary>Details</summary>
+      <p>Your agent home lives in your GitHub and your Supabase now, not here. Everything else you need is inside the repo itself (<code>CONNECT.md</code>, <code>ORCHESTRATION.md</code>, <code>BEST-PRACTICES.md</code>).</p>
+      <p>You don't need this page again. Bookmark your repo and database links above — everything else lives inside the repo itself.</p>
     </details>
   </section>
 
-  <!-- STEP 4 : DONE -->
-  <section class="step hidden" id="step4">
-    <div class="step-head"><span class="step-num">✓</span><h2>You're set up — you don't need this page again</h2></div>
-    <p>Your agent home lives in your GitHub and your Supabase now, not here. Bookmark the two links below; everything else you need is inside the repo itself (<code>CONNECT.md</code>, <code>ORCHESTRATION.md</code>, <code>BEST-PRACTICES.md</code>).</p>
-    <div id="doneLinks"></div>
-    <div class="safe" style="margin-top:16px">
-      <label style="display:flex;gap:10px;align-items:flex-start;font-weight:400;margin:0;cursor:pointer">
-        <input type="checkbox" id="regTick" checked style="width:auto;margin-top:4px;flex:none" />
-        <span><strong>Tell the person who shared this with me that I'm set up</strong> — this sends only my name and my repo link, nothing else.</span>
-      </label>
-      <p class="small" id="regNote" style="margin:8px 0 0"></p>
+  <!-- EXTRAS : IMPORT + MANUAL + WIRING (post-done, optional) -->
+  <section class="screen" id="screen-extras">
+    <h1>Extras, if you want them</h1>
+    <p class="lede">Optional. Your setup already works without these.</p>
+    <button class="btn secondary" id="backToDoneBtn" type="button">Back</button>
+    <button class="btn" id="extrasFullSetBtn" type="button">Get more AIs (free)</button>
+    <details id="scoreboardDetails">
+      <summary>Your best-practices scoreboard</summary>
+      <p class="small">From <code>BEST-PRACTICES.md</code>, the shared register of what we've learned building agent setups like this. Only checks this page actually verified during your setup are listed — anything not verified is not claimed.</p>
+      <div id="scoreboard"></div>
+    </details>
+
+    <div id="stepImport">
+      <details>
+      <summary>Bring what your tools already know</summary>
+      <p>Already have memory files — a Claude or Muse export, ChatGPT or Grok notes, plain local files? Add them here. This page reads them <em>in your browser only</em>, pulls out candidate memories, drops exact duplicates, and shows you every conflict to settle yourself. <strong>Nothing is silently overwritten, ever</strong> — where two files disagree, you pick.</p>
+      <label for="importFiles">Memory files (.md, .txt, .json — pick as many as you have)</label>
+      <input type="file" id="importFiles" accept=".md,.txt,.json,text/markdown,text/plain,application/json" multiple />
+      <div class="okbox" id="importSummary"></div>
+      <div id="conflictList"></div>
+      <div class="err" id="importErr"></div>
+      <div id="importActions" class="hidden">
+        <button class="btn" id="importRepoBtn" type="button">Write the reconciled import to my repo</button>
+        <p class="small" style="margin-top:8px">Commits two things: your reconciled memories appended to <code>MEMORY.md</code>, and an <code>IMPORT-REPORT.md</code> listing what came from where, which duplicates were dropped, and how each conflict was resolved. Needs the repo from setup (if you import before creating the repo, the import rides along automatically when the repo is created).</p>
+        <button class="btn secondary" id="importRowsBtn" type="button">Show the database rows this prepares</button>
+        <div id="importRowsBox" class="hidden">
+          <div class="block-head"><h3>Rows prepared for the <code>memories</code> table</h3>
+          <button class="btn small-btn secondary" id="importRowsCopy" type="button">Copy JSON</button></div>
+          <pre id="importRowsPre"></pre>
+          <p class="small">Load them with <code>tools/import_md.py</code> from your repo, or paste into your own import. <code>owner_id</code> is left as <code>YOUR-AUTH-USER-ID</code> on purpose: it must be your Supabase auth user id, and this page will not invent one.</p>
+        </div>
+      </div>
+      </details>
     </div>
-    <h3>Your best-practices scoreboard — verified checks only</h3>
-    <p class="small">From <code>BEST-PRACTICES.md</code>, the shared register of what we've learned building agent setups like this. Only checks this page actually verified during your setup are listed — anything not verified is not claimed.</p>
-    <div id="scoreboard"></div>
-    <div class="safe">
-      <p style="margin:0"><strong>The one safety rule:</strong> everything created here is private and yours — the repo under your GitHub account, the database under your Supabase account. Nothing on this page keeps a copy of your tokens or keys. If you ever want to cut access, revoke the token from the provider's own settings (GitHub → Settings → Developer settings; Supabase → Account → Access Tokens) and delete the keys from your local <code>.env</code>. Now revoke the two setup tokens you pasted — setup is done, they have served their purpose.</p>
+
+    <div id="step3">
+      <details>
+      <summary>Wire the two together</summary>
+      <p>This commits three safe files to your repo: <code>agent.config.json</code> (project reference + public URL only — <strong>no keys, ever</strong>), a personalised <code>CONNECT.md</code>, and <code>.env.example</code>. Your real keys appear only in the <code>.env</code> boxes on the done screen, for local files that <code>.gitignore</code> keeps out of the repo. If an app needs database access, the exact variable it may receive is <code>SUPABASE_ANON_KEY</code> — never the service-role key, which stays in a separate importer-only file. Wiring normally runs by itself at the end of setup — this button is here if you ever need to run it again.</p>
+      <button class="btn" id="wireBtn" type="button" disabled>Wire it together</button>
+      <ul class="check" id="wireCheck">
+        <li data-k="wire-config"><span class="dot">✓</span><span><code>agent.config.json</code> committed (ref + URL only)</span><span class="st"></span></li>
+        <li data-k="wire-connect"><span class="dot">✓</span><span><code>CONNECT.md</code> committed</span><span class="st"></span></li>
+        <li data-k="wire-readback"><span class="dot">✓</span><span>Wiring read back from the repo and verified</span><span class="st"></span></li>
+      </ul>
+      <div class="err" id="wireErr"></div>
+      <div class="okbox" id="wireOk"></div>
+      <details>
+        <summary>Optional: GitHub Secrets (manual — this page does not do this for you)</summary>
+        <p class="small" style="margin-top:8px">If you later run GitHub Actions against your database, the keys belong in repo secrets. Adding them properly needs GitHub's public-key encryption flow, which this page does not perform — so here is the exact manual click-path instead of a fake button: open your repo → <strong>Settings → Secrets and variables → Actions → New repository secret</strong>, and add <code>SUPABASE_URL</code> and <code>SUPABASE_ANON_KEY</code> from your local <code>.env</code>, one at a time. Add <code>SUPABASE_SERVICE_ROLE_KEY</code> only if an Action truly needs it — it has full access to your database. Takes about two minutes; most people never need it.</p>
+      </details>
+      </details>
     </div>
-    <h3>Confirm each app is wired: paste it this message</h3>
-    <p><strong>A correct reply proves the app can read your home. If it names a blank field instead, you're connected — you just haven't filled that part in yet.</strong> That's “wired, just not filled in yet”, not a failure.</p>
-    <p class="small">Send the matching message to each AI app you use. It tells the app to read your repo and <em>prove</em> it's in sync — it must reply with your name from USER.md, one fact from MEMORY.md quoted word for word, and the canonical-store line. If it instead says “I can't read your agent home yet”, that app isn't wired; paste it the full setup block from <code>CONNECT.md</code> in your repo first.</p>
-    <div id="confirmBlocks"></div>
-    <h3>Full setup blocks</h3>
-    <p class="small">The longer first-time blocks (also saved as <code>CONNECT.md</code> in your repo). There is no shared one-click sign-in across these tools — a generated paste block is the honest version.</p>
-    <div id="doneBlocks"></div>
+
+    <div id="manual">
+      <details>
+      <summary>Just want the template?</summary>
+      <p>Download every template file and set things up by hand. Fill in what you already have (or plan to have) and the paste blocks below update to match.</p>
+      <label for="mRepo">Your repo URL (optional)</label>
+      <input type="text" id="mRepo" placeholder="https://github.com/you/agent-home" autocomplete="off" spellcheck="false" />
+      <label for="mDb">Your database URL (optional)</label>
+      <input type="text" id="mDb" placeholder="https://xxxx.supabase.co" autocomplete="off" spellcheck="false" />
+      <button class="btn secondary" id="dlBtn" type="button">Download all template files</button>
+      <p class="small" style="margin-top:8px">Your browser will save each file one by one — allow multiple downloads if it asks. Files:</p>
+      <p class="filelist">README.md · SOUL.md · IDENTITY.md · USER.md · AGENTS.md · MEMORY.md · CONNECT.md · ORCHESTRATION.md · BEST-PRACTICES.md · skills/README.md · skills/memory-hygiene.md · skills/verify-before-claiming.md · skills/import-and-reconcile.md · agent.config.example.json · .env.example · .gitignore · db/001_starter_schema.sql · tools/import_md.py</p>
+      <div id="manualBlocks"></div>
+      </details>
+    </div>
   </section>
-
-  <hr class="divider" />
-
-  <!-- MANUAL PATH -->
-  <section class="step" id="manual">
-    <div class="step-head"><h2>Just want the template?</h2><span class="tag">No tokens</span></div>
-    <p>Download every template file and set things up by hand. Fill in what you already have (or plan to have) and the paste blocks below update to match.</p>
-    <div class="grid2">
-      <div><label for="mRepo">Your repo URL (optional)</label>
-      <input type="text" id="mRepo" placeholder="https://github.com/you/agent-home" autocomplete="off" spellcheck="false" /></div>
-      <div><label for="mDb">Your database URL (optional)</label>
-      <input type="text" id="mDb" placeholder="https://xxxx.supabase.co" autocomplete="off" spellcheck="false" /></div>
-    </div>
-    <button class="btn secondary" id="dlBtn" type="button">Download all template files</button>
-    <p class="small" style="margin-top:8px">Your browser will save each file one by one — allow multiple downloads if it asks. Files:</p>
-    <p class="filelist">README.md · SOUL.md · IDENTITY.md · USER.md · AGENTS.md · MEMORY.md · CONNECT.md · ORCHESTRATION.md · BEST-PRACTICES.md · skills/README.md · skills/memory-hygiene.md · skills/verify-before-claiming.md · skills/import-and-reconcile.md · agent.config.example.json · .env.example · .gitignore · db/001_starter_schema.sql · tools/import_md.py</p>
-    <div id="manualBlocks"></div>
-  </section>
-
-  <p class="small" style="margin-top:24px">How verification works here: a checklist item only turns green after this page has read the result back from GitHub or Supabase itself — “created” means the provider confirmed it on a fresh request, not that a request was sent. If a provider refuses something, its own error message is shown, unedited, in the red box for that step.</p>
 
   <!-- ADMIN VIEW (owner only, reached via a secret #admin-<key> link) -->
-  <section class="step hidden" id="adminView">
-    <div class="step-head"><h2>Admin — who's set up</h2></div>
+  <section class="screen" id="adminView">
+    <h1>Who's set up</h1>
+    <p class="lede">Names and repo links only.</p>
     <p class="small">This link is your key — anyone who has it can see this list (names and repo links only), so keep it private, the way you'd keep a password.</p>
     <p class="small" id="adminNote"></p>
     <div id="adminTableWrap" style="overflow-x:auto"></div>
   </section>
 
+  <p class="footer-line">Cozybase · Free for the first members · Everything created is yours</p>
 </div>
+
 <script>
 "use strict";
 /* ============ CONFIG — set googleClientId to switch on Continue with Google ============
@@ -373,8 +520,21 @@ var CONFIG = {
   /* Optional register: the same helper worker's /register address. When set, the done
      screen's tick-box can tell the person who shared the page that a setup finished,
      and the owner's secret admin link (#admin-<key>) can read the list back. */
-  registryUrl: ""
+  registryUrl: "",
+  MUSE_REFERRAL_CODE: "18GRDY",
+  /* "Get the full set" signup links. Defaults are the plain official signup pages;
+     the operator may replace any of them with a referral/invite link — signups then
+     carry the sharer's referral code automatically, because opening the link IS the
+     mechanism. Nothing about referrals is shown on screen beyond one Details line. */
+  signupUrls: {
+    claude: "https://claude.ai/",
+    chatgpt: "https://chatgpt.com/",
+    grok: "https://grok.com/",
+    muse: "https://muse.ai/join"
+  }
 };
+/* SIGNUP_URLS — the same links, as the flat constant the flow reads. */
+var SIGNUP_URLS = CONFIG.signupUrls;
 
 /* ============ state (memory only — nothing is ever persisted) ============ */
 var S = {
@@ -383,7 +543,7 @@ var S = {
   ghToken:"", ghUser:"", repoUrl:"", repoFull:"", repoDone:false,
   sbToken:"", sbOrgId:"", sbRegion:"ap-southeast-1", projectRef:"", projectUrl:"",
   dbPassword:"", anonKey:"", serviceKey:"", dbDone:false, dbSkipped:false,
-  wired:false
+  wired:false, verificationPhrase:"", ownerId:""
 };
 function $(id){return document.getElementById(id);}
 function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
@@ -397,6 +557,18 @@ function genPassword(){
   var arr=new Uint32Array(28); crypto.getRandomValues(arr);
   var out=""; for(var i=0;i<arr.length;i++){out+=chars[arr[i]%chars.length];}
   return out;
+}
+/* One random verification phrase per setup session (e.g. "harbor-lantern-42").
+   Generated once, cached in S, and written into MEMORY.md as a seed line; the
+   per-app sync checks ask the app to quote it back from MEMORY.md verbatim. */
+function verificationPhrase(){
+  if(S.verificationPhrase)return S.verificationPhrase;
+  var words=["harbor","lantern","meadow","cedar","willow","copper","velvet","ember","orchard","marble","compass","saddle","timber","violet","juniper","maple","beacon","anchor","falcon","glacier","river","summit","tulip","walnut","pearl","onyx","dune","cinder","cobalt","zephyr"];
+  var arr=new Uint32Array(3); crypto.getRandomValues(arr);
+  var w1=words[arr[0]%words.length], w2=words[arr[1]%words.length];
+  if(w2===w1)w2=words[(arr[1]+1)%words.length];
+  S.verificationPhrase=w1+"-"+w2+"-"+(10+(arr[2]%90));
+  return S.verificationPhrase;
 }
 function setCheck(listId,key,state,note){
   var li=document.querySelector("#"+listId+" li[data-k='"+key+"']");
@@ -501,7 +673,8 @@ return "# MEMORY.md — curated long-term memory\n\n"+
 "<!-- The distilled layer. The full store is the database (`memories` table); this file holds what an assistant should always have in mind. Keep it tight — promote what lasts, prune what doesn't. -->\n\n"+
 "## Standing facts\n"+
 "<!-- One line each, dated when learned. The first one below is true already — it was written when this home was set up. -->\n"+
-"- Set up my agent home with Cozybase (owner: "+(v.name||"not filled in yet")+", "+new Date().toISOString().slice(0,10)+")\n\n"+
+"- Set up my agent home with Cozybase (owner: "+(v.name||"not filled in yet")+", "+new Date().toISOString().slice(0,10)+")\n"+
+"- Verification phrase: "+(v.verificationPhrase||verificationPhrase())+"\n\n"+
 "## Preferences that have held\n"+
 "<!-- Only preferences confirmed more than once. A single mention is a hint, not a fact. -->\n\n"+
 "## Decisions in force\n"+
@@ -620,7 +793,33 @@ return "-- 001_starter_schema.sql — agent home starter schema\n"+
 "drop policy if exists conversations_owner on public.conversations;\n"+
 "create policy conversations_owner on public.conversations for all using (auth.uid() = owner_id) with check (auth.uid() = owner_id);\n"+
 "drop policy if exists sources_owner on public.sources;\n"+
-"create policy sources_owner on public.sources for all using (auth.uid() = owner_id) with check (auth.uid() = owner_id);\n";
+"create policy sources_owner on public.sources for all using (auth.uid() = owner_id) with check (auth.uid() = owner_id);\n\n"+
+"-- owners: one row per auth user — the record every import and write relies on --\n"+
+"create table if not exists public.owners (\n"+
+"  id uuid primary key,\n"+
+"  display_name text,\n"+
+"  created_at timestamptz not null default now()\n"+
+");\n\n"+
+"-- owner bootstrap: create the owners row the moment an auth user appears -------\n"+
+"-- Without this, no owners row ever exists and every import / database write that\n"+
+"-- checks it fails. Security definer so the insert is not blocked by row-level\n"+
+"-- security on the owners table itself.\n"+
+"create or replace function public.handle_new_auth_user()\n"+
+"returns trigger language plpgsql security definer set search_path = public as $$\n"+
+"begin\n"+
+"  insert into public.owners (id, display_name)\n"+
+"  values (new.id, coalesce(new.raw_user_meta_data->>'full_name', new.raw_user_meta_data->>'name'))\n"+
+"  on conflict (id) do nothing;\n"+
+"  return new;\n"+
+"end; $$;\n\n"+
+"drop trigger if exists on_auth_user_created on auth.users;\n"+
+"create trigger on_auth_user_created\n"+
+"  after insert on auth.users\n"+
+"  for each row execute function public.handle_new_auth_user();\n\n"+
+"-- backfill: owners rows for auth users who already exist -----------------------\n"+
+"insert into public.owners (id, display_name)\n"+
+"select id, coalesce(raw_user_meta_data->>'full_name', raw_user_meta_data->>'name') from auth.users\n"+
+"on conflict (id) do nothing;\n";
 }
 function tplImportPy(){
 return "#!/usr/bin/env python3\n"+
@@ -716,7 +915,7 @@ function connectBlock(tool,v){
     "4. What you learn about me stays in my repo, under my keys. Never copy it anywhere else.\n";
   }
   return head+rules+
-  "5. Never ask for, print, or commit my credentials. Keys live only in a local .env file on my machine.\n\n"+
+  "5. Never ask for, print, or commit my credentials. Keys live only in a local .env file on my machine. The only key an app may ever receive from that file is the one named SUPABASE_ANON_KEY — never the service-role key, which is importer-only.\n\n"+
   "Confirm you've read the files by telling me, in one line each: who I am, what I'm working on, and one open loop from MEMORY.md.";
 }
 function tplConnect(v){
@@ -823,7 +1022,7 @@ function templateFiles(v){
   return files;
 }
 function currentVars(){
-  return {name:S.name,email:S.email,repoName:S.repoName,repoUrl:S.repoUrl,projectRef:S.projectRef,projectUrl:S.projectUrl};
+  return {name:S.name,email:S.email,repoName:S.repoName,repoUrl:S.repoUrl,projectRef:S.projectRef,projectUrl:S.projectUrl,verificationPhrase:verificationPhrase()};
 }
 function renderBlocks(containerId,v){
   var c=$(containerId); c.innerHTML="";
@@ -928,7 +1127,7 @@ async function ghCreate(){
     });
     showErr("ghErr",e.message);
   }finally{
-    btn.disabled=false; btn.textContent="Create my private repo";
+    btn.disabled=false; btn.textContent="Create my private folder";
   }
 }
 
@@ -1041,7 +1240,7 @@ async function sbCreate(){
     });
     showErr("sbErr",e.message);
   }finally{
-    btn.disabled=false; btn.textContent="Create my database";
+    btn.disabled=false; btn.textContent="Create my memory store";
   }
 }
 
@@ -1062,10 +1261,21 @@ async function putFile(path,content,msg){
 }
 function envContents(){
   return "# .env — LOCAL ONLY. Never commit this file. .gitignore already excludes it.\n"+
+  "# This file holds only what apps may see: the project URL, SUPABASE_ANON_KEY and your owner id.\n"+
+  "# The service-role key is NOT here — it lives in .env.service-role (importer only).\n"+
   "SUPABASE_URL="+(S.projectUrl||"")+"\n"+
   "SUPABASE_ANON_KEY="+(S.anonKey||"")+"\n"+
+  "OWNER_ID="+(S.ownerId||"")+"\n"+
+  "# SUPABASE_ANON_KEY lives at: https://supabase.com/dashboard/project/"+(S.projectRef||"YOUR-REF")+"/settings/api\n"+
+  "# OWNER_ID is your Supabase auth user id (dashboard → Authentication → Users).\n";
+}
+function envServiceContents(){
+  return "# .env.service-role — LOCAL ONLY. Importer only — never give this to any AI app. Never commit this file.\n"+
+  "# Full database access. Used only by tools/import_md.py running on your own machine.\n"+
+  "SUPABASE_URL="+(S.projectUrl||"")+"\n"+
   "SUPABASE_SERVICE_ROLE_KEY="+(S.serviceKey||"")+"\n"+
-  "# Get any missing key from: https://supabase.com/dashboard/project/"+(S.projectRef||"YOUR-REF")+"/settings/api\n";
+  "OWNER_ID="+(S.ownerId||"")+"\n"+
+  "# Get the key from: https://supabase.com/dashboard/project/"+(S.projectRef||"YOUR-REF")+"/settings/api\n";
 }
 async function wire(){
   clearErr("wireErr"); $("wireOk").classList.remove("show");
@@ -1095,8 +1305,11 @@ async function wire(){
     S.wired=true;
     $("envPre").textContent=envContents();
     $("envBox").classList.remove("hidden");
-    showOk("wireOk","<strong>Wired — and read back from GitHub to prove it.</strong> The repo holds only the project reference and public URL. Your keys exist only in the box below, for your local <code>.env</code>.");
-    showDone();
+    $("envServicePre").textContent=envServiceContents();
+    $("envServiceBox").classList.remove("hidden");
+    showOk("wireOk","<strong>Wired — and read back from GitHub to prove it.</strong> The repo holds only the project reference and public URL. Your keys exist only in the boxes below, for your local files. If an app needs a key, the exact variable it may receive is <code>SUPABASE_ANON_KEY</code> — never the service-role key.");
+    fullSetReturn="step4";
+    showScreen("stepFullSet");
   }catch(e){
     ["wire-config","wire-connect","wire-readback"].forEach(function(k){
       var li=document.querySelector("#wireCheck li[data-k='"+k+"']");
@@ -1113,14 +1326,15 @@ function confirmBlock(tool,v){
   return "Quick sync check — please do exactly this:\n\n"+
   "1. Open my private agent home: "+repo+"\n"+
   "2. Read these files: README.md, USER.md, MEMORY.md and AGENTS.md.\n"+
-  "3. Then reply with these three things, so I can see you're really connected:\n"+
-  "   (1) my name, as written in USER.md;\n"+
-  "   (2) one fact about me from MEMORY.md, quoted word for word;\n"+
-  "   (3) "+(hasDb?"the line: Canonical store: database":"the line: Canonical store: files (no database yet)")+"\n\n"+
+  "3. Then reply with these four things, in this order, so I can check you're really reading my home:\n"+
+  "   (1) FIRST, the verification phrase from MEMORY.md: find the line beginning “Verification phrase:” and quote the phrase after it exactly, word for word;\n"+
+  "   (2) my name, as written in USER.md;\n"+
+  "   (3) one fact about me from MEMORY.md, quoted word for word;\n"+
+  "   (4) "+(hasDb?"the line: Canonical store: database":"the line: Canonical store: files (no database yet)")+"\n\n"+
   "Two honest fallbacks — use them instead of guessing:\n"+
-  "- If you can't read my agent home, reply exactly: I can't read your agent home yet.\n"+
+  "- If you can't read my agent home, or MEMORY.md has no “Verification phrase:” line, reply exactly: I can't read your agent home yet.\n"+
   "- If a field you need is blank, name the blank field (for example: “Your name in USER.md is blank”). That means I'm wired, just not filled in yet — it is not a failure.\n\n"+
-  "Never invent a name or a fact to fill a blank.";
+  "Never invent a name, a fact, or a verification phrase to fill a blank.";
 }
 function renderConfirm(containerId,v){
   var c=$(containerId); c.innerHTML="";
@@ -1156,20 +1370,19 @@ function showDone(){
   if(S.repoUrl)links+="<p><strong>Your repo:</strong> <a href=\""+esc(S.repoUrl)+"\" target=\"_blank\" rel=\"noopener\">"+esc(S.repoUrl)+"</a> (private)</p>";
   if(S.projectRef)links+="<p><strong>Your database:</strong> <a href=\"https://supabase.com/dashboard/project/"+esc(S.projectRef)+"\" target=\"_blank\" rel=\"noopener\">Supabase project "+esc(S.projectRef)+"</a> — "+esc(S.projectUrl)+"</p>";
   else links+="<p><strong>Database:</strong> not added yet — files only for now. You can run step 2 any time and re-wire.</p>";
-  links+="<p class=\"small\">Keep your local <code>.env</code> (step 3) somewhere safe on your own machine. It is the only place your keys exist outside Supabase itself.</p>";
   $("doneLinks").innerHTML=links;
   maybeRegister();
   renderScoreboard();
   renderConfirm("confirmBlocks",v);
   renderBlocks("doneBlocks",v);
-  $("step4").classList.remove("hidden");
-  $("step4").scrollIntoView({behavior:"smooth",block:"start"});
+  loadProofBubble();
+  showScreen("step4");
 }
 
 /* ============ manual / download path ============ */
 function manualVars(){
   readBasics();
-  return {name:S.name,repoName:S.repoName,repoUrl:$("mRepo").value.trim(),projectRef:"",projectUrl:$("mDb").value.trim()};
+  return {name:S.name,repoName:S.repoName,repoUrl:$("mRepo").value.trim(),projectRef:"",projectUrl:$("mDb").value.trim(),verificationPhrase:verificationPhrase()};
 }
 function refreshManual(){ renderBlocks("manualBlocks",manualVars()); }
 function downloadAll(){
@@ -1247,13 +1460,13 @@ async function handleOAuthReturn(){
       S.ghToken=token;
       var u=await ghFetch("/user"); S.ghUser=u.login;
       setCheck("ghCheck","gh-verify","done","@"+u.login);
-      showOk("ghConnected","✓ You're connected as <strong>@"+esc(u.login)+"</strong>. Now click “Create my private folder”.");
-      $("step1").scrollIntoView({behavior:"smooth",block:"start"});
+      showOk("ghConnected","✓ You're connected as <strong>@"+esc(u.login)+"</strong>. Your folder is being created now.");
+      showScreen("step1"); setTimeout(function(){runGithubFlow();},400);
     }else{
       S.sbToken=token;
       await sbAfterConnect();
-      showOk("sbConnected","✓ You're connected to Supabase. Now pick your group and area above and click “Create my memory store”.");
-      $("step2").scrollIntoView({behavior:"smooth",block:"start"});
+      showOk("sbConnected","✓ You're connected to Supabase. Your memory store is being created now.");
+      showScreen("step2"); setTimeout(function(){runSupabaseFlow();},400);
     }
   }catch(e){
     showErr(saved.provider==="supabase"?"sbErr":"ghErr",e.message);
@@ -1263,6 +1476,8 @@ function initConnect(){
   var ghPill=$("ghPill"), sbPill=$("sbPill");
   if(ghPill){ if(oauthConfigured("github")){ghPill.textContent="One click";} else {ghPill.textContent="Demo mode — code fallback"; ghPill.classList.add("paste");} }
   if(sbPill){ if(oauthConfigured("supabase")){sbPill.textContent="One click";} else {sbPill.textContent="Demo mode — code fallback"; sbPill.classList.add("paste");} }
+  var gdl=$("ghDemoLine"); if(gdl){ if(oauthConfigured("github"))gdl.classList.add("hidden"); else gdl.classList.remove("hidden"); }
+  var sdl=$("sbDemoLine"); if(sdl){ if(oauthConfigured("supabase"))sdl.classList.add("hidden"); else sdl.classList.remove("hidden"); }
   var gb=$("ghConnectBtn"), gn=$("ghConnectNote");
   if(oauthConfigured("github")){
     gb.textContent="Connect GitHub";
@@ -1337,7 +1552,7 @@ function decodeJwt(t){
 }
 function initGoogle(){
   if(!CONFIG.googleClientId){
-    $("googleBtn").addEventListener("click",function(){ $("fName").focus(); });
+    $("googleWrap").classList.add("hidden");
     return;
   }
   $("googleNote").textContent="Opens Google's own sign-in. This page reads only your name and email from it, to fill in the boxes below — they are never sent anywhere else.";
@@ -1524,7 +1739,7 @@ async function loadAdmin(){
     var rows=Array.isArray(body)?body:(body.registrations||body.items||body.rows||[]);
     if(!rows.length){ note.textContent="Nobody has registered a setup yet — setups appear here when someone finishes and leaves the tick-box on."; wrap.innerHTML=""; return; }
     note.textContent="";
-    var html="<table style=\"width:100%;border-collapse:collapse;font-size:14px\"><tr>"+
+    var html="<table style=\"width:100%;border-collapse:collapse;font-size:18px\"><tr>"+
       "<th style=\"text-align:left;padding:8px;border-bottom:1px solid var(--line)\">Name</th>"+
       "<th style=\"text-align:left;padding:8px;border-bottom:1px solid var(--line)\">Repo</th>"+
       "<th style=\"text-align:left;padding:8px;border-bottom:1px solid var(--line)\">Database</th>"+
@@ -1541,8 +1756,7 @@ async function loadAdmin(){
   }catch(e){ note.textContent="Couldn't load the list: "+e.message+"."; }
 }
 function showAdmin(){
-  $("adminView").classList.remove("hidden");
-  $("adminView").scrollIntoView({behavior:"smooth",block:"start"});
+  showScreen("adminView");
   loadAdmin();
 }
 function checkAdminHash(){
@@ -1554,7 +1768,7 @@ function checkAdminHash(){
 }
 
 /* ============ wiring of controls ============ */
-$("startBtn").addEventListener("click",function(){ $("step0").scrollIntoView({behavior:"smooth",block:"start"}); $("fName").focus({preventScroll:true}); });
+$("startBtn").addEventListener("click",function(){ showScreen("step0"); $("fName").focus({preventScroll:true}); });
 $("ghBtn").addEventListener("click",ghCreate);
 $("sbOrgBtn").addEventListener("click",sbLoadOrgs);
 $("sbOrg").addEventListener("change",function(){ S.sbOrgId=this.value; });
@@ -1573,8 +1787,9 @@ $("dlBtn").addEventListener("click",downloadAll);
 $("fName").addEventListener("input",function(){ readBasics(); suggestRepo(); readBasics(); updateIdentitySummary(); });
 $("fEmail").addEventListener("input",function(){ updateIdentitySummary(); refreshManual(); });
 $("fRepo").addEventListener("input",function(){ S.repoTouched=true; });
-$("ghHaveBtn").addEventListener("click",function(){ $("ghHavePanel").classList.remove("hidden"); $("ghNewPanel").classList.add("hidden"); });
-$("ghNewBtn").addEventListener("click",function(){ $("ghNewPanel").classList.remove("hidden"); $("ghHavePanel").classList.add("hidden"); });
+$("ghHaveBtn").addEventListener("click",function(){ showScreen("step1"); });
+$("ghNewBtn").addEventListener("click",function(){ showScreen("step1signup"); });
+$("ghSignupHaveBtn").addEventListener("click",function(){ showScreen("step1"); });
 $("ghToken").addEventListener("input",debounce(verifyGhToken,700));
 $("sbToken").addEventListener("input",debounce(verifySbToken,700));
 $("importFiles").addEventListener("change",function(){ handleImportFiles().catch(function(e){ showErr("importErr",e.message); }); });
@@ -1592,6 +1807,184 @@ initGoogle();
 handleOAuthReturn();
 checkAdminHash();
 refreshManual();
+
+/* ============ wizard: one screen at a time, four obvious states ============ */
+var WIZ_SCREENS=["screen-welcome","step0","step1choice","step1signup","step1","step2","screen-working","screen-success","screen-failed","stepFullSet","step4","screen-extras","adminView"];
+var wizBack="screen-welcome", wizRetry=null, wizSuccessNext=null, wizPoll=null;
+function showScreen(id){
+  WIZ_SCREENS.forEach(function(s){var el=$(s); if(el){el.classList.toggle("active",s===id); el.classList.remove("hidden");}});
+  var stepMap={"step0":1,"step1":2,"step2":3};
+  var pw=$("progressWrap");
+  if(stepMap[id]){
+    pw.classList.remove("hidden");
+    $("progressLabel").textContent="Step "+stepMap[id]+" of 3";
+    [1,2,3].forEach(function(n){
+      var d=$("dot"+n); d.className=n===stepMap[id]?"on":(n<stepMap[id]?"done":"");
+    });
+  } else pw.classList.add("hidden");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+var WIZ_WORK_TEXT={
+  "gh-verify":"Checking your sign-in…","gh-create":"Creating your private folder…",
+  "gh-upload":"Adding your starter files…","gh-readback":"Checking it's private…",
+  "sb-verify":"Checking your sign-in…","sb-create":"Creating your memory store…",
+  "sb-active":"Waiting for it to wake up…","sb-schema":"Locking it to only you…",
+  "sb-readback":"Checking everything is there…",
+  "wire-config":"Joining the two together…","wire-connect":"Joining the two together…","wire-readback":"Checking the join worked…"
+};
+function startWorkPoll(listIds){
+  stopWorkPoll();
+  wizPoll=setInterval(function(){
+    listIds.forEach(function(lid){
+      var li=document.querySelector("#"+lid+" li.doing");
+      if(li){var t=WIZ_WORK_TEXT[li.getAttribute("data-k")]; if(t)$("workingMsg").textContent=t;}
+    });
+  },350);
+}
+function stopWorkPoll(){ if(wizPoll){clearInterval(wizPoll); wizPoll=null;} }
+function showWorking(title,msg,backScreen){
+  wizBack=backScreen||wizBack;
+  $("workingTitle").textContent=title;
+  $("workingMsg").textContent=msg;
+  showScreen("screen-working");
+}
+function showSuccessState(title,line,nextLabel,nextFn){
+  stopWorkPoll();
+  $("successTitle").textContent=title;
+  $("successLine").textContent=line;
+  $("successContinueBtn").textContent=nextLabel||"Continue";
+  wizSuccessNext=nextFn;
+  showScreen("screen-success");
+}
+function plainError(tech,context){
+  var t=String(tech||"");
+  if(/token|connect|401|403|unauthor/i.test(t))return "You need to connect first — it's in Details on the previous screen.";
+  if(/already exists|422/i.test(t))return "That name is already taken. Try again, or change the name in Details.";
+  if(/ACTIVE_HEALTHY|6 minutes/i.test(t))return "It's taking longer than usual. Try again in a minute.";
+  if(/NOT private/i.test(t))return "GitHub says the folder isn't private. Don't use it yet — try again.";
+  if(context==="github")return "Your folder wasn't created. Nothing is lost — try again.";
+  if(context==="supabase")return "Your memory store wasn't created. Nothing is lost — try again.";
+  if(context==="wire")return "The two halves didn't join. Nothing is lost — try again.";
+  return "Something went wrong. Nothing is lost — try again.";
+}
+function showFailedState(tech,context,retryFn,backScreen){
+  stopWorkPoll();
+  $("failedLine").textContent=plainError(tech,context);
+  $("failedTech").textContent=String(tech||"No technical message was provided.");
+  $("failedDetails").open=false;
+  wizRetry=retryFn; wizBack=backScreen||wizBack;
+  showScreen("screen-failed");
+}
+async function runGithubFlow(){
+  if(!S.ghToken)S.ghToken=$("ghToken").value.trim();
+  if(!S.ghToken){
+    if(oauthConfigured("github")){ startOAuth("github"); return; }
+    showFailedState("Demo mode: one-click GitHub sign-in isn't switched on for this copy of the page yet, so no connection exists. Use the code option under Details on the folder screen — it does exactly the same job.","github",
+      function(){ showScreen("step1"); $("ghDetails").open=true; $("ghAdvanced").open=true; $("ghToken").focus(); },"step1");
+    return;
+  }
+  wizBack="step1";
+  showWorking("Creating your folder…","Checking your sign-in…","step1");
+  startWorkPoll(["ghCheck"]);
+  await ghCreate();
+  stopWorkPoll();
+  if(S.repoDone){
+    showSuccessState("✓ Your folder is private","Checked on GitHub just now.","Continue",function(){ showScreen("step2"); });
+  }else{
+    showFailedState($("ghErr").textContent||"GitHub did not confirm the folder was created.","github",runGithubFlow,"step1");
+  }
+}
+async function runSupabaseFlow(){
+  if(!S.sbToken)S.sbToken=$("sbToken").value.trim();
+  if(!S.sbToken){
+    if(oauthConfigured("supabase")){ startOAuth("supabase"); return; }
+    showFailedState("Demo mode: one-click Supabase sign-in isn't switched on for this copy of the page yet, so no connection exists. Use the code option under Details on the memory screen — it does exactly the same job.","supabase",
+      function(){ showScreen("step2"); $("sbDetails").open=true; $("sbAdvanced").open=true; $("sbToken").focus(); },"step2");
+    return;
+  }
+  wizBack="step2";
+  showWorking("Creating your memory store…","Checking your sign-in…","step2");
+  startWorkPoll(["sbCheck"]);
+  await sbCreate();
+  stopWorkPoll();
+  if(S.dbDone){
+    showSuccessState("✓ Only you can open it","Checked in your database just now.","Continue",function(){ runWireFlow(); });
+  }else{
+    showFailedState($("sbErr").textContent||"Supabase did not confirm the memory store was created.","supabase",runSupabaseFlow,"step2");
+  }
+}
+async function runWireFlow(){
+  if(!S.repoDone){ fullSetReturn="step4"; showScreen("stepFullSet"); return; }
+  wizBack="step2";
+  showWorking("Joining everything together…","Joining the two together…","step2");
+  startWorkPoll(["wireCheck"]);
+  await wire();
+  stopWorkPoll();
+  if(S.wired){
+    /* wire() already called showDone(), which shows the done screen */
+  }else{
+    showFailedState($("wireErr").textContent||"The wiring could not be read back from GitHub.","wire",runWireFlow,"step2");
+  }
+}
+$("nameContinueBtn").addEventListener("click",function(){
+  readBasics();
+  if(!S.name){ $("nameErr").classList.add("show"); $("fName").focus(); return; }
+  $("nameErr").classList.remove("show");
+  showScreen("step1choice");
+});
+$("ghPrimaryBtn").addEventListener("click",function(){ runGithubFlow(); });
+$("sbPrimaryBtn").addEventListener("click",function(){ runSupabaseFlow(); });
+$("sbSkip").addEventListener("click",function(){ setTimeout(function(){ runWireFlow(); },50); });
+$("successContinueBtn").addEventListener("click",function(){ if(wizSuccessNext)wizSuccessNext(); });
+$("failedRetryBtn").addEventListener("click",function(){ if(wizRetry)wizRetry(); });
+$("failedBackBtn").addEventListener("click",function(){ showScreen(wizBack); });
+$("showPastesBtn").addEventListener("click",function(){
+  var w=$("pastesWrap"); var open=!w.open; w.open=open;
+  this.textContent=open?"Hide my copy-paste messages":"Show my copy-paste messages";
+  if(open)w.scrollIntoView({behavior:"smooth",block:"start"});
+});
+var fullSetReturn="step4";
+function renderFullSet(){
+  var apps=[["claude","Claude"],["chatgpt","ChatGPT"],["grok","Grok"],["muse","Muse"]];
+  var c=$("fullSetRows"); if(!c)return; c.innerHTML="";
+  apps.forEach(function(a){
+    var row=document.createElement("div"); row.className="fs-row";
+    var n=document.createElement("span"); n.className="fs-name"; n.textContent=a[1];
+    var b=document.createElement("a"); b.className="btn small-btn secondary"; b.textContent="Get it free";
+    b.href=SIGNUP_URLS[a[0]]||"#"; b.target="_blank"; b.rel="noopener";
+    row.appendChild(n); row.appendChild(b); c.appendChild(row);
+  });
+}
+async function loadProofBubble(){
+  var wrap=$("proofBubble"); if(!wrap)return;
+  wrap.classList.add("hidden");
+  if(!S.repoDone||!S.ghToken||!S.repoFull)return;
+  try{
+    var f=await ghFetch("/repos/"+S.repoFull+"/contents/MEMORY.md");
+    if(!f||!f.content)return;
+    var text=decodeURIComponent(escape(atob(f.content.replace(/\n/g,""))));
+    var fact="";
+    text.split(/\r?\n/).forEach(function(line){
+      if(!fact&&line.indexOf("Set up my agent home")!==-1)
+        fact=line.replace(/^[-*\s]+/,"").split(" (owner:")[0].trim();
+    });
+    if(!fact)return;
+    $("proofBubbleText").textContent="Hi "+(S.name||"there")+" — I remember: "+fact.charAt(0).toLowerCase()+fact.slice(1)+".";
+    wrap.classList.remove("hidden");
+  }catch(e){ /* the bubble only ever shows what was actually read back */ }
+}
+$("fullSetContinueBtn").addEventListener("click",function(){
+  if(fullSetReturn==="screen-extras"){ fullSetReturn="step4"; showScreen("screen-extras"); }
+  else showDone();
+});
+$("extrasFullSetBtn").addEventListener("click",function(){ fullSetReturn="screen-extras"; showScreen("stepFullSet"); });
+$("pastesFullSetBtn").addEventListener("click",function(){ fullSetReturn="step4"; showScreen("stepFullSet"); });
+renderFullSet();
+$("doneExtrasBtn").addEventListener("click",function(){ showScreen("screen-extras"); });
+$("welcomeExtrasBtn").addEventListener("click",function(){ showScreen("screen-extras"); });
+$("backToDoneBtn").addEventListener("click",function(){ showScreen(S.repoDone||S.wired?"step4":"screen-welcome"); });
+if(!(location.search||"").match(/[?&]code=/)&&!(location.hash||"").match(/^#admin-/)) showScreen("screen-welcome");
+
 </script>
 </body>
 </html>
